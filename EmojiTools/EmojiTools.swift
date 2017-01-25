@@ -25,10 +25,19 @@
 
 import Foundation
 
+// MARK:- String
 extension String {
     
     public func emojiString() -> String {
         return String.emojiStringFromString(self)
+    }
+    
+    func composedCharacterSequences() -> [String] {
+        var characters = [String]()
+        enumerateSubstringsInRange(startIndex..<endIndex, options: .ByComposedCharacterSequences) { char, start, end, stop in
+            characters.append(char!)
+        }
+        return characters
     }
     
     public static func emojiStringFromString(inputString: String) -> String {
@@ -59,12 +68,14 @@ extension String {
     }
 
     public static func containsEmoji(string: String) -> Bool {
-        for scalar in string.unicodeScalars {
-            if scalar.isEmoji() {
-                return true
+        var found = false
+        string.enumerateSubstringsInRange(string.startIndex..<string.endIndex, options: .ByComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+            if let substring = substring where String.isEmoji(substring) {
+                found = true
+                stop = true
             }
         }
-        return false
+        return found
     }
 
     public func containsEmojiOnly(allowWhitespace: Bool = true) -> Bool {
@@ -76,33 +87,90 @@ extension String {
         if allowWhitespace {
             inputString = string.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).joinWithSeparator("")
         }
-        for scalar in inputString.unicodeScalars {
-            if !scalar.isEmoji() {
-                return false
+        var result = true
+        inputString.enumerateSubstringsInRange(inputString.startIndex..<inputString.endIndex, options: .ByComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+            if let substring = substring where !String.isEmoji(substring) {
+                result = false
+                stop = true
             }
         }
+        return result
+    }
+    
+    // checks if a string representing a single composed character sequence is an emoji
+    private static func isEmoji(string: String) -> Bool {
+        let emojiChars = EmojiTools.emojiCharacters
+        // check in the map of known characters first
+        if emojiChars.contains(string) {
+            return true
+        }
+        
+        // check individual unicode scalars - all must be known emoji, a zero-width joiner and optionally ending with a variant selector
+        let scalars = string.unicodeScalars
+        for (i, scalar) in scalars.enumerate() {
+            if scalar.isZeroWidthJoiner() || scalar.isEmoji() || (i == scalars.count - 1 && scalar.isEmojiVariationSelector()) {
+                continue
+            }
+            return false
+        }
+        
         return true
     }
     
 }
 
+// MARK:- UnicodeScalar
 extension UnicodeScalar {
-
+    
     public func isEmoji() -> Bool {
-        return UnicodeScalar.isEmoji(self)
+        return EmojiTools.emojiCharacters.contains(String(self))
     }
-
-    public static func isEmoji(scalar: UnicodeScalar) -> Bool {
-        return emojis.unicodeScalars.contains(scalar)
+    
+    public func isEmojiVariationSelector() -> Bool {
+        return isEmojiVariationStandardSelector() || isEmojiVariationSelectorSupplement()
+    }
+    
+    // these are between U+FE00 and U+FE0F as of Unicode 9
+    public func isEmojiVariationStandardSelector() -> Bool {
+        return value >= 65024 && value <= 65039
+    }
+    
+    // these are between U+E0100 and U+E01EF as of Unicode 9
+    public func isEmojiVariationSelectorSupplement() -> Bool {
+        return value >= 917760 && value <= 917999
+    }
+    
+    public func isZeroWidthJoiner() -> Bool {
+        return value == 8205
     }
 }
 
+
+// MARK:- EmojiTools
 public struct EmojiCodeSuggestion {
     let code: String
     let character: String
 }
 
-public struct EmojiTools {
+public class EmojiTools {
+    public static let emojiCharacters: Set<String> = {
+        let ourBundle = NSBundle.init(forClass: EmojiTools.self)
+        var result: Set<String>? = nil
+        if let path = ourBundle.pathForResource("emoji", ofType: "txt") {
+            result = EmojiTools.loadCharacterSetFromFile(path)
+        }
+        if result == nil {
+            result = Set<String>()
+        }
+        return result!
+    }()
+    
+    private static func loadCharacterSetFromFile(filePath: String) -> Set<String>? {
+        if let contents = try? String(contentsOfFile: filePath) {
+            return Set<String>(contents.composedCharacterSequences())
+        }
+        return nil
+    }
 
     public static func emojiCodeSuggestionsForSearchTerm(searchTerm: String) -> [EmojiCodeSuggestion] {
         let keys = Array(emojiShortCodes.keys)

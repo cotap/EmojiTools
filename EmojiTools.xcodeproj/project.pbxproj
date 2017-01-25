@@ -12,6 +12,7 @@
 		9BC62B621C3A1D3A008F7061 /* EmojiToolsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC62B611C3A1D3A008F7061 /* EmojiToolsTests.swift */; };
 		9BC62B6D1C3A1DAB008F7061 /* EmojiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC62B6C1C3A1DAB008F7061 /* EmojiData.swift */; };
 		9BC62B6F1C3A1F4A008F7061 /* EmojiTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC62B6E1C3A1F4A008F7061 /* EmojiTools.swift */; };
+		C4189C791E36CC3C007C3227 /* emoji.txt in Resources */ = {isa = PBXBuildFile; fileRef = C4189C781E36CC3C007C3227 /* emoji.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,7 @@
 		9BC62B631C3A1D3A008F7061 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9BC62B6C1C3A1DAB008F7061 /* EmojiData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiData.swift; sourceTree = "<group>"; };
 		9BC62B6E1C3A1F4A008F7061 /* EmojiTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiTools.swift; sourceTree = "<group>"; };
+		C4189C781E36CC3C007C3227 /* emoji.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = emoji.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 		9BC62B481C3A1D39008F7061 = {
 			isa = PBXGroup;
 			children = (
+				C4189C771E36CC1E007C3227 /* Resources */,
 				9BC62B541C3A1D3A008F7061 /* EmojiTools */,
 				9BC62B601C3A1D3A008F7061 /* EmojiToolsTests */,
 				9BC62B531C3A1D3A008F7061 /* Products */,
@@ -90,6 +93,14 @@
 				9BC62B631C3A1D3A008F7061 /* Info.plist */,
 			);
 			path = EmojiToolsTests;
+			sourceTree = "<group>";
+		};
+		C4189C771E36CC1E007C3227 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C4189C781E36CC3C007C3227 /* emoji.txt */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -183,6 +194,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4189C791E36CC3C007C3227 /* emoji.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,6 +278,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -306,6 +319,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -389,6 +403,7 @@
 				9BC62B681C3A1D3A008F7061 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9BC62B691C3A1D3A008F7061 /* Build configuration list for PBXNativeTarget "EmojiToolsTests" */ = {
 			isa = XCConfigurationList;
@@ -397,6 +412,7 @@
 				9BC62B6B1C3A1D3A008F7061 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
