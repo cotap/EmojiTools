@@ -68,5 +68,27 @@ class EmojiToolsTests: XCTestCase {
         let processedEmojiString = "The 🐒 is trying to buy a 🍌 with some 💰 at the 🏪."
         XCTAssertEqual(emojiCodeString.emojiString(), processedEmojiString)
     }
+    
+    func testLargeStringInitialLoad() {
+        let ourBundle = NSBundle.init(forClass: EmojiTools.self)
+        guard let path = ourBundle.pathForResource("emoji", ofType: "txt"), let string = try? String(contentsOfFile: path) else {
+            XCTAssertNotNil(nil, "Failed to load test data from file")
+            return
+        }
+        var testString = ""
+        var i = 0
+        let limit = 1000
+        string.enumerateSubstringsInRange(string.startIndex..<string.endIndex, options: .ByComposedCharacterSequences) { char, start, end, stop in
+            testString.appendContentsOf(char!)
+            i += 1
+            if i >= limit {
+                stop = true
+            }
+        }
+        print("Testing \(i) long emoji string...")
+        measureBlock {
+            XCTAssertTrue(testString.containsEmojiOnly())
+        }
+    }
 
 }
