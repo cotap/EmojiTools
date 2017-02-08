@@ -55,6 +55,15 @@ func someFunction() {
 }
 ```
 
+Emoji Stripping
+```swift
+import EmojiTools
+func someFunction() {
+	let emojiContainingString = "This string has 🍉☕️🍻 emoji... 8️⃣🔡🕒"
+	let stringWithoutEmoji = emojiContainingString.stringByRemovingEmoji() // "This string has  emoji... "
+}
+```
+
 ## Author
 - [Todd Kramer](http://www.tekramer.com)
 
