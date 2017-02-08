@@ -28,10 +28,6 @@ import Foundation
 // MARK:- String
 extension String {
     
-    public func emojiString() -> String {
-        return String.emojiStringFromString(self)
-    }
-    
     func composedCharacterSequences() -> [String] {
         var characters = [String]()
         enumerateSubstringsInRange(startIndex..<endIndex, options: .ByComposedCharacterSequences) { char, start, end, stop in
@@ -40,6 +36,22 @@ extension String {
         return characters
     }
     
+    /**
+     Converts emoji markdown to an emoji. For example, ":smile:" into "😀"
+     
+     - Returns: Emoji string
+     */
+    public func emojiString() -> String {
+        return String.emojiStringFromString(self)
+    }
+    
+    /**
+        Converts emoji markdown to an emoji. For example, ":smile:" into "😀"
+     
+        - Parameter inputString: Emoji markdown string, such as ":smile:"
+        
+        - Returns: Emoji string
+    */
     public static func emojiStringFromString(inputString: String) -> String {
         var token: dispatch_once_t = 0
         var regex: NSRegularExpression? = nil
@@ -63,14 +75,26 @@ extension String {
         return resultText
     }
 
+    /**
+     Tests whether a string contains an emoji.
+     
+     - Returns: Whether the string contains emoji
+     */
     public func containsEmoji() -> Bool {
         return String.containsEmoji(self)
     }
 
+    /**
+        Tests whether a string contains an emoji.
+     
+        - Parameter string: The string to test
+     
+        - Returns: Whether the string contains emoji
+    */
     public static func containsEmoji(string: String) -> Bool {
         var found = false
         string.enumerateSubstringsInRange(string.startIndex..<string.endIndex, options: .ByComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
-            if let substring = substring where String.isEmoji(substring) {
+            if let substring = substring where String.isEmojiCharacterSequence(substring) {
                 found = true
                 stop = true
             }
@@ -78,10 +102,26 @@ extension String {
         return found
     }
 
+    /**
+     Tests whether a string is composed of nothing but emojis
+     
+     - Parameter allowWhitespace:   Whether to ignore white space
+     
+     - Returns: Whether the string is composed of nothing but emoji and optionally white space
+     */
     public func containsEmojiOnly(allowWhitespace: Bool = true) -> Bool {
         return String.containsEmojiOnly(self, allowWhitespace: allowWhitespace)
     }
     
+    /**
+     Tests whether a string is composed of nothing but emojis
+     
+     - Parameters:
+        - string:            The string to test
+        - allowWhitespace:   Whether to ignore white space
+     
+     - Returns: Whether the string is composed of nothing but emoji and optionally white space
+    */
     public static func containsEmojiOnly(string: String, allowWhitespace: Bool = true) -> Bool {
         var inputString = string
         if allowWhitespace {
@@ -89,7 +129,7 @@ extension String {
         }
         var result = true
         inputString.enumerateSubstringsInRange(inputString.startIndex..<inputString.endIndex, options: .ByComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
-            if let substring = substring where !String.isEmoji(substring) {
+            if let substring = substring where !String.isEmojiCharacterSequence(substring) {
                 result = false
                 stop = true
             }
@@ -97,8 +137,18 @@ extension String {
         return result
     }
     
-    // checks if a string representing a single composed character sequence is an emoji
-    private static func isEmoji(string: String) -> Bool {
+    /**
+        Tests whether a string is a composed sequence of characters constituting an emoji
+     
+        - Parameter string: A string to test.
+     
+        - Important: This method is intended on testing whether a composed series of characters, given as an argument
+            represents a single emoji. To identify emojis in a string, you must enumerate it using ByComposedCharacterSequences
+            enumeration option.
+     
+        - Returns: True is the entire string is a single emoji
+    */
+    public static func isEmojiCharacterSequence(string: String) -> Bool {
         let emojiChars = EmojiTools.emojiCharacters
         // check in the map of known characters first
         if emojiChars.contains(string) {
@@ -122,24 +172,30 @@ extension String {
 // MARK:- UnicodeScalar
 extension UnicodeScalar {
     
+    /// Tests whether unicode scalar is an emoji
     public func isEmoji() -> Bool {
         return EmojiTools.emojiCharacters.contains(String(self))
     }
     
+    /// Tests whether unicode scalar is an emoji variant (such as skin tone)
     public func isEmojiVariationSelector() -> Bool {
         return isEmojiVariationStandardSelector() || isEmojiVariationSelectorSupplement()
     }
     
-    // these are between U+FE00 and U+FE0F as of Unicode 9
+    /// Tests whether unicode scalar is a standard emoji variation selector.
+    /// These are between U+FE00 and U+FE0F as of Unicode 9
     public func isEmojiVariationStandardSelector() -> Bool {
         return value >= 65024 && value <= 65039
     }
     
-    // these are between U+E0100 and U+E01EF as of Unicode 9
+    /// Tests whether unicode scalar is an emoji variation supplement.
+    /// These are between U+E0100 and U+E01EF as of Unicode 9
     public func isEmojiVariationSelectorSupplement() -> Bool {
         return value >= 917760 && value <= 917999
     }
     
+    /// Tests whether unicode scalar is a zero-width joiner
+    /// These can be used to combine multiple emoji codepoints into a single emoji
     public func isZeroWidthJoiner() -> Bool {
         return value == 8205
     }
@@ -153,6 +209,7 @@ public struct EmojiCodeSuggestion {
 }
 
 public class EmojiTools {
+    /// Map of known emoji characters
     public static let emojiCharacters: Set<String> = {
         let ourBundle = NSBundle.init(forClass: EmojiTools.self)
         var result: Set<String>? = nil
