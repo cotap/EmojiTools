@@ -97,6 +97,16 @@ extension String {
         return result
     }
     
+    public func stringByRemovingEmoji() -> String {
+        var result = ""
+        enumerateSubstringsInRange(startIndex..<endIndex, options: .ByComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+            if let substring = substring where !String.isEmoji(substring) {
+                result.appendContentsOf(substring)
+            }
+        }
+        return result
+    }
+    
     // checks if a string representing a single composed character sequence is an emoji
     private static func isEmoji(string: String) -> Bool {
         let emojiChars = EmojiTools.emojiCharacters

@@ -30,14 +30,33 @@ class EmojiToolsTests: XCTestCase {
 
     let nonEmojiString = "This string does not contain emoji."
     let nonEmojiNumerals = "1234567890"
+    
     let emojiString = "This 😀😎👩‍👩‍👧‍👧 string 🌲🐯🌛 has 🍉☕️🍻 a 🎆🏀🎼 lot 🚌🗽✈️ of 📞🔦✉️ emoji. 8️⃣🔡🕒"
+    let emojiStringStripped = "This  string  has  a  lot  of  emoji. "
+    
     let emojiString10 = "\u{1f923} \u{1f924} \u{1f920} \u{1f921}" // new to iOS10
+    let emojiString10Stripped = "   " // new to iOS10
+    
     let emojiModifiersString = "This 👶🏻 string 👦🏽👩🏾 has emoji with skin tone variations."
+    let emojiModifiersStringStripped = "This  string  has emoji with skin tone variations."
+    
     let emojiOnlyWhitespaceString = "😀😎👩‍👩‍👧‍👧 🌲🐯🌛 🍉☕️🍻 🎆🏀🎼\n🚌🗽✈️      📞🔦✉️ 8️⃣🔡🕒"
+    let emojiOnlyWhitespaceStringStripped = "   \n       "
+    
     let emojiOnlyString = "😀😎👩‍👩‍👧‍👧🌲🐯🌛🍉☕️🍻🎆🏀🎼🚌🗽✈️📞🔦✉️8️⃣🔡🕒"
+    let emojiOnlyStringStripped = ""
+    
     let emojiOnlyModifiersString = "👶🏻👦🏽👩🏾"
+    let emojiOnlyModifiersStringStripped = ""
+    
+    let emojiOnlyModifiersMixedString = "These have emoji with modifiers: 👶🏻👦🏽👩🏾!"
+    let emojiOnlyModifiersMixedStringStripped = "These have emoji with modifiers: !"
+    
     let emojiOnlyComposedString = "🇻🇪🇻🇳🇼🇫🇪🇭🇾🇪🇿🇲🇿🇼"
+    let emojiOnlyComposedStringStripped = ""
+    
     let emojiCodeString = "The :monkey: is trying to buy a :banana: with some :moneybag: at the :convenience_store:."
+    let emojiProcessedString = "The 🐒 is trying to buy a 🍌 with some 💰 at the 🏪."
     
     func testContainsEmoji() {
         XCTAssertFalse(nonEmojiString.containsEmoji())
@@ -65,8 +84,20 @@ class EmojiToolsTests: XCTestCase {
     }
 
     func testEmojiString() {
-        let processedEmojiString = "The 🐒 is trying to buy a 🍌 with some 💰 at the 🏪."
-        XCTAssertEqual(emojiCodeString.emojiString(), processedEmojiString)
+        XCTAssertEqual(emojiCodeString.emojiString(), emojiProcessedString)
+    }
+    
+    func testEmojiStripping() {
+        XCTAssertEqual(nonEmojiString, nonEmojiString.stringByRemovingEmoji())
+        XCTAssertEqual(nonEmojiNumerals, nonEmojiNumerals.stringByRemovingEmoji())
+        XCTAssertEqual(emojiStringStripped, emojiString.stringByRemovingEmoji())
+        XCTAssertEqual(emojiString10Stripped, emojiString10.stringByRemovingEmoji())
+        XCTAssertEqual(emojiModifiersStringStripped, emojiModifiersString.stringByRemovingEmoji())
+        XCTAssertEqual(emojiOnlyWhitespaceStringStripped, emojiOnlyWhitespaceString.stringByRemovingEmoji())
+        XCTAssertEqual(emojiOnlyStringStripped, emojiOnlyString.stringByRemovingEmoji())
+        XCTAssertEqual(emojiOnlyModifiersStringStripped, emojiOnlyModifiersString.stringByRemovingEmoji())
+        XCTAssertEqual(emojiOnlyModifiersMixedStringStripped, emojiOnlyModifiersMixedString.stringByRemovingEmoji())
+        XCTAssertEqual(emojiOnlyComposedStringStripped, emojiOnlyComposedString.stringByRemovingEmoji())
     }
 
 }
