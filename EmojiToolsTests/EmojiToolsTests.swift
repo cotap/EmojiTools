@@ -55,13 +55,13 @@ class EmojiToolsTests: XCTestCase {
         XCTAssertFalse(nonEmojiNumerals.containsEmojiOnly())
         XCTAssertFalse(emojiString.containsEmojiOnly())
         XCTAssertFalse(emojiModifiersString.containsEmojiOnly())
-        XCTAssertFalse(emojiOnlyWhitespaceString.containsEmojiOnly(false))
+        XCTAssertFalse(emojiOnlyWhitespaceString.containsEmojiOnly(allowWhitespace: false))
         XCTAssertTrue(emojiOnlyWhitespaceString.containsEmojiOnly())
         XCTAssertTrue(emojiOnlyString.containsEmojiOnly())
         XCTAssertTrue(emojiOnlyModifiersString.containsEmojiOnly())
-        XCTAssertTrue(emojiOnlyString.containsEmojiOnly(false))
+        XCTAssertTrue(emojiOnlyString.containsEmojiOnly(allowWhitespace: false))
         XCTAssertTrue(emojiOnlyComposedString.containsEmojiOnly())
-        XCTAssertTrue(emojiOnlyComposedString.containsEmojiOnly(false))
+        XCTAssertTrue(emojiOnlyComposedString.containsEmojiOnly(allowWhitespace: false))
     }
 
     func testEmojiString() {

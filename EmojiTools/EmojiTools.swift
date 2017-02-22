@@ -25,12 +25,17 @@
 
 import Foundation
 
+fileprivate var regex: NSRegularExpression? = {
+    let pattern = "(:[a-z0-9-+_]+:)"
+    return try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+}()
+
 // MARK:- String
 extension String {
     
     func composedCharacterSequences() -> [String] {
         var characters = [String]()
-        enumerateSubstringsInRange(startIndex..<endIndex, options: .ByComposedCharacterSequences) { char, start, end, stop in
+        enumerateSubstrings(in: startIndex..<endIndex, options: .byComposedCharacterSequences) { char, start, end, stop in
             characters.append(char!)
         }
         return characters
@@ -42,7 +47,7 @@ extension String {
      - Returns: Emoji string
      */
     public func emojiString() -> String {
-        return String.emojiStringFromString(self)
+        return String.emojiString(from: self)
     }
     
     /**
@@ -52,22 +57,15 @@ extension String {
         
         - Returns: Emoji string
     */
-    public static func emojiStringFromString(inputString: String) -> String {
-        var token: dispatch_once_t = 0
-        var regex: NSRegularExpression? = nil
-        dispatch_once(&token) {
-            let pattern = "(:[a-z0-9-+_]+:)"
-            regex = try! NSRegularExpression(pattern: pattern, options: .CaseInsensitive)
-        }
-        
+    public static func emojiString(from inputString: String) -> String {
         var resultText = inputString
         let matchRange = NSMakeRange(0, resultText.characters.count)
-        regex?.enumerateMatchesInString(resultText, options: .ReportCompletion, range: matchRange, usingBlock: { (result, _, _) -> Void in
+        regex?.enumerateMatches(in: resultText, options: .reportCompletion, range: matchRange, using: { (result, _, _) -> Void in
             guard let range = result?.range else { return }
             if range.location != NSNotFound {
-                let emojiCode = (inputString as NSString).substringWithRange(range)
+                let emojiCode = (inputString as NSString).substring(with: range)
                 if let emojiCharacter = emojiShortCodes[emojiCode] {
-                    resultText = resultText.stringByReplacingOccurrencesOfString(emojiCode, withString: emojiCharacter)
+                    resultText = resultText.replacingOccurrences(of: emojiCode, with: emojiCharacter)
                 }
             }
         })
@@ -91,10 +89,10 @@ extension String {
      
         - Returns: Whether the string contains emoji
     */
-    public static func containsEmoji(string: String) -> Bool {
+    public static func containsEmoji(_ string: String) -> Bool {
         var found = false
-        string.enumerateSubstringsInRange(string.startIndex..<string.endIndex, options: .ByComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
-            if let substring = substring where String.isEmojiCharacterSequence(substring) {
+        string.enumerateSubstrings(in: string.startIndex..<string.endIndex, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+            if let substring = substring, String.isEmojiCharacterSequence(substring) {
                 found = true
                 stop = true
             }
@@ -122,14 +120,14 @@ extension String {
      
      - Returns: Whether the string is composed of nothing but emoji and optionally white space
     */
-    public static func containsEmojiOnly(string: String, allowWhitespace: Bool = true) -> Bool {
+    public static func containsEmojiOnly(_ string: String, allowWhitespace: Bool = true) -> Bool {
         var inputString = string
         if allowWhitespace {
-            inputString = string.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).joinWithSeparator("")
+            inputString = string.components(separatedBy: CharacterSet.whitespacesAndNewlines).joined(separator: "")
         }
         var result = true
-        inputString.enumerateSubstringsInRange(inputString.startIndex..<inputString.endIndex, options: .ByComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
-            if let substring = substring where !String.isEmojiCharacterSequence(substring) {
+        inputString.enumerateSubstrings(in: inputString.startIndex..<inputString.endIndex, options: .byComposedCharacterSequences) { (substring, substringRange, enclosingRange, stop) in
+            if let substring = substring, !String.isEmojiCharacterSequence(substring) {
                 result = false
                 stop = true
             }
@@ -148,7 +146,7 @@ extension String {
      
         - Returns: True is the entire string is a single emoji
     */
-    public static func isEmojiCharacterSequence(string: String) -> Bool {
+    public static func isEmojiCharacterSequence(_ string: String) -> Bool {
         let emojiChars = EmojiTools.emojiCharacters
         // check in the map of known characters first
         if emojiChars.contains(string) {
@@ -157,7 +155,7 @@ extension String {
         
         // check individual unicode scalars - all must be known emoji, a zero-width joiner and optionally ending with a variant selector
         let scalars = string.unicodeScalars
-        for (i, scalar) in scalars.enumerate() {
+        for (i, scalar) in scalars.enumerated() {
             if scalar.isZeroWidthJoiner() || scalar.isEmoji() || (i == scalars.count - 1 && scalar.isEmojiVariationSelector()) {
                 continue
             }
@@ -211,10 +209,10 @@ public struct EmojiCodeSuggestion {
 public class EmojiTools {
     /// Map of known emoji characters
     public static let emojiCharacters: Set<String> = {
-        let ourBundle = NSBundle.init(forClass: EmojiTools.self)
+        let ourBundle = Bundle.init(for: EmojiTools.self)
         var result: Set<String>? = nil
-        if let path = ourBundle.pathForResource("emoji", ofType: "txt") {
-            result = EmojiTools.loadCharacterSetFromFile(path)
+        if let path = ourBundle.path(forResource: "emoji", ofType: "txt") {
+            result = EmojiTools.loadCharacterSet(fromFile: path)
         }
         if result == nil {
             result = Set<String>()
@@ -222,18 +220,18 @@ public class EmojiTools {
         return result!
     }()
     
-    private static func loadCharacterSetFromFile(filePath: String) -> Set<String>? {
+    private static func loadCharacterSet(fromFile filePath: String) -> Set<String>? {
         if let contents = try? String(contentsOfFile: filePath) {
             return Set<String>(contents.composedCharacterSequences())
         }
         return nil
     }
 
-    public static func emojiCodeSuggestionsForSearchTerm(searchTerm: String) -> [EmojiCodeSuggestion] {
+    public static func emojiCodeSuggestions(for searchTerm: String) -> [EmojiCodeSuggestion] {
         let keys = Array(emojiShortCodes.keys)
         let filteredKeys = keys.filter { (key) -> Bool in
-            return key.containsString(searchTerm)
-            }.sort()
+            return key.contains(searchTerm)
+            }.sorted()
         let unicodeCharacters = filteredKeys.map({ emojiShortCodes[$0]! })
         var suggestions = [EmojiCodeSuggestion]()
         if filteredKeys.count == 0 { return suggestions }
