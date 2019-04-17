@@ -59,7 +59,7 @@ extension String {
     */
     public static func emojiString(from inputString: String) -> String {
         var resultText = inputString
-        let matchRange = NSMakeRange(0, resultText.characters.count)
+        let matchRange = NSMakeRange(0, resultText.count)
         regex?.enumerateMatches(in: resultText, options: .reportCompletion, range: matchRange, using: { (result, _, _) -> Void in
             guard let range = result?.range else { return }
             if range.location != NSNotFound {
