@@ -9,27 +9,9 @@ Tools for detecting emoji in strings and using emoji shortcut codes.
 - convert emoji shortcut codes in strings into their emoji equivalents
 - get suggested emoji shortcut codes from a search string
 
-##Requirements
-Since EmojiTools is a dynamic framework, **iOS 8 or above is required**
+## Installing
 
-##CocoaPods
-```
-platform :ios, '8.0'
-use_frameworks!
-
-target 'SingleViewApp' do
-  pod 'EmojiTools'
-end
-```
-
-##Manual Installation
-To install EmojiTools manually:
-  1. Download, clone, or submodule EmojiTools.
-  2. Drag the **EmojiTools.xcodeproj** file into your project under the **Products** folder
-  3. In your target's **Build Phases** settings, add **EmojiTools** to the **Target Dependencies** build phase.
-  4. Add the **EmojiTools.framework** product to the **Link Binary With Libraries** build phase.
-  5. If there is no **Copy Files** build phase, add one.
-  6. Add **EmojiTools.framework** to the **Copy Files** build phase and set the destination to **Frameworks**
+Use SwiftPM to include EmojiTools in your project.
 
 ##Usage
 Emoji Detection:
