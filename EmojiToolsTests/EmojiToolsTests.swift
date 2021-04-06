@@ -30,43 +30,94 @@ class EmojiToolsTests: XCTestCase {
 
     let nonEmojiString = "This string does not contain emoji."
     let nonEmojiNumerals = "1234567890"
-    let emojiString = "This 😀😎👩‍👩‍👧‍👧 string 🌲🐯🌛 has 🍉☕️🍻 a 🎆🏀🎼 lot 🚌🗽✈️ of 📞🔦✉️ emoji. 8️⃣🔡🕒"
-    let emojiString10 = "\u{1f923} \u{1f924} \u{1f920} \u{1f921}" // new to iOS10
-    let emojiModifiersString = "This 👶🏻 string 👦🏽👩🏾 has emoji with skin tone variations."
-    let emojiOnlyWhitespaceString = "😀😎👩‍👩‍👧‍👧 🌲🐯🌛 🍉☕️🍻 🎆🏀🎼\n🚌🗽✈️      📞🔦✉️ 8️⃣🔡🕒"
+    let mixedEmojiString = "This 😀😎👩‍👩‍👧‍👧 string 🌲🐯🌛 has 🍉☕️🍻 a 🎆🏀🎼 lot 🚌🗽✈️ of 📞🔦✉️ emoji. 8️⃣🔡🕒"
+    let mixedEmojiCodeString = "\u{1f923} \u{1f924} \u{1f920} \u{1f921}" // new to iOS10
+    let mixedEmojiModifiersString = "This 👶🏻 string 👦🏽👩🏾 has emoji with skin tone variations."
+    let mixedEmojiWhitespaceString = "😀😎👩‍👩‍👧‍👧 🌲🐯🌛 🍉☕️🍻 🎆🏀🎼\n🚌🗽✈️      📞🔦✉️ 8️⃣🔡🕒"
     let emojiOnlyString = "😀😎👩‍👩‍👧‍👧🌲🐯🌛🍉☕️🍻🎆🏀🎼🚌🗽✈️📞🔦✉️8️⃣🔡🕒"
     let emojiOnlyModifiersString = "👶🏻👦🏽👩🏾"
     let emojiOnlyComposedString = "🇻🇪🇻🇳🇼🇫🇪🇭🇾🇪🇿🇲🇿🇼"
-    let emojiCodeString = "The :monkey: is trying to buy a :banana: with some :moneybag: at the :convenience_store:."
+    let emojiTokenString = "The :monkey: is trying to buy a :banana: with some :moneybag: at the :convenience_store:."
     
-    func testContainsEmoji() {
+    func testNonEmojiStringContainsNoEmoji() {
         XCTAssertFalse(nonEmojiString.containsEmoji())
+    }
+    
+    func testNonEmojiNumeralsContainsNoEmoji() {
         XCTAssertFalse(nonEmojiNumerals.containsEmoji())
-        XCTAssertTrue(emojiString.containsEmoji())
-        XCTAssertTrue(emojiString10.containsEmoji())
-        XCTAssertTrue(emojiModifiersString.containsEmoji())
-        XCTAssertTrue(emojiOnlyWhitespaceString.containsEmoji())
+    }
+    
+    func testMixedEmojiStringContainsEmoji() {
+        XCTAssertTrue(mixedEmojiString.containsEmoji())
+    }
+    
+    func testMixedEmojiCodeStringContainsEmoji() {
+        XCTAssertTrue(mixedEmojiCodeString.containsEmoji())
+    }
+    
+    func testMixedEmojiModifersStringContainsEmoji() {
+        XCTAssertTrue(mixedEmojiModifiersString.containsEmoji())
+    }
+    
+    func testMixedEmojiWhitespaceStringContainsEmoji() {
+        XCTAssertTrue(mixedEmojiWhitespaceString.containsEmoji())
+    }
+    
+    func testEmojiOnlyStringContainsEmoji() {
         XCTAssertTrue(emojiOnlyString.containsEmoji())
+    }
+    
+    func testEmojiOnlyComposedStringContainsEmoji() {
         XCTAssertTrue(emojiOnlyComposedString.containsEmoji())
     }
     
-    func testContainsEmojiOnly() {
+    func testNonEmojiStringDoesNotContainEmojiOnly() {
         XCTAssertFalse(nonEmojiString.containsEmojiOnly())
+    }
+    
+    func testEmojiNumeralsStringDoesNotContainEmojiOnly() {
         XCTAssertFalse(nonEmojiNumerals.containsEmojiOnly())
-        XCTAssertFalse(emojiString.containsEmojiOnly())
-        XCTAssertFalse(emojiModifiersString.containsEmojiOnly())
-        XCTAssertFalse(emojiOnlyWhitespaceString.containsEmojiOnly(allowWhitespace: false))
-        XCTAssertTrue(emojiOnlyWhitespaceString.containsEmojiOnly())
+    }
+    
+    func testMixedEmojiStringDoesNotContainEmojiOnly() {
+        XCTAssertFalse(mixedEmojiString.containsEmojiOnly())
+    }
+    
+    func testMixedEmojiModifiersStringDoesNotContainEmojiOnly() {
+        XCTAssertFalse(mixedEmojiModifiersString.containsEmojiOnly())
+    }
+    
+    func testMixedEmojiWhitespaceStringDoesNotContainEmojiOnly() {
+        XCTAssertFalse(mixedEmojiWhitespaceString.containsEmojiOnly(allowWhitespace: false))
+    }
+    
+    func testMixedEmojiWhitespaceStringContainsEmojiAndWhitespaceOnly() {
+        XCTAssertTrue(mixedEmojiWhitespaceString.containsEmojiOnly())
+    }
+    
+    func testEmojiOnlyStringContainsEmojiAndWhitespaceOnly() {
         XCTAssertTrue(emojiOnlyString.containsEmojiOnly())
-        XCTAssertTrue(emojiOnlyModifiersString.containsEmojiOnly())
+    }
+    
+    func testEmojiOnlyStringContainsEmojiOnly() {
         XCTAssertTrue(emojiOnlyString.containsEmojiOnly(allowWhitespace: false))
+    }
+    
+    func testEmojiOnlyModifiersStringContainsEmojiOnly() {
+        XCTAssertTrue(emojiOnlyModifiersString.containsEmojiOnly())
+    }
+    
+    func testEmojiOnlyComposedStringContainsEmojiAndWhitespaceOnly() {
         XCTAssertTrue(emojiOnlyComposedString.containsEmojiOnly())
+    }
+    
+    func testEmojiOnlyComposedStringStringContainsEmojiOnly() {
         XCTAssertTrue(emojiOnlyComposedString.containsEmojiOnly(allowWhitespace: false))
     }
 
     func testEmojiString() {
         let processedEmojiString = "The 🐒 is trying to buy a 🍌 with some 💰 at the 🏪."
-        XCTAssertEqual(emojiCodeString.emojiString(), processedEmojiString)
+        XCTAssertEqual(emojiTokenString.emojiString(), processedEmojiString)
     }
 
 }

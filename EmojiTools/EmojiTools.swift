@@ -209,7 +209,7 @@ public struct EmojiCodeSuggestion {
 public class EmojiTools {
     /// Map of known emoji characters
     public static let emojiCharacters: Set<String> = {
-        let ourBundle = Bundle.init(for: EmojiTools.self)
+        let ourBundle = Bundle.module
         var result: Set<String>? = nil
         if let path = ourBundle.path(forResource: "emoji", ofType: "txt") {
             result = EmojiTools.loadCharacterSet(fromFile: path)
